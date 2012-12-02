@@ -113,6 +113,22 @@ class Admin::ContentController < Admin::BaseController
     render :text => nil
   end
 
+  def merge
+    if not current_user.admin?
+      flash[:error] = _("Error, you are not allowed to perform this action")
+    else
+      @article1 = Article.find(params[:id])
+      @article2 = Article.find(params[:merge_with])
+      @article3 = Article.merge(@article1, @article2)
+      if @article3
+        flash[:notice] = _("Articles merged")
+      else
+        flash[:notice] = _("Articles NOT merged, unknown IDs?")
+      end
+    end
+    redirect_to :action => 'index'
+  end
+
   protected
 
   def get_fresh_or_existing_draft_for_article
