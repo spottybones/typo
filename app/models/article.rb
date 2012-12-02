@@ -466,4 +466,13 @@ class Article < Content
     to = to - 1 # pull off 1 second so we don't overlap onto the next day
     return from..to
   end
+
+  def self.merge article1 = nil, article2 = nil
+    return nil unless article1.is_a?(Article) && article2.is_a?(Article)
+    merged = Article.get_or_build_article.tap do |article|
+      article.title = article1.title
+      article.body = article1.body + article2.body
+    end
+  end
+
 end
