@@ -116,17 +116,20 @@ class Admin::ContentController < Admin::BaseController
   def merge
     if not current_user.admin?
       flash[:error] = _("Error, you are not allowed to perform this action")
+      redirect_to :action => 'index'
     else
       @article1 = Article.find(params[:id])
       @article2 = Article.find(params[:merge_with])
       @article3 = Article.merge(@article1, @article2)
       if @article3
+        @article3.save!
         flash[:notice] = _("Articles merged")
+        redirect_to @article3.permalink
       else
-        flash[:notice] = _("Articles NOT merged, unknown IDs?")
+        flash[:warning] = _("Articles NOT merged, unknown IDs?")
+        redirect_to :action => 'index'
       end
     end
-    redirect_to :action => 'index'
   end
 
   protected
