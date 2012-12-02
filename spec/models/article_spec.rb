@@ -650,7 +650,7 @@ describe Article do
 
     it 'should create and return a new article with the contents of both source articles' do
       article3 = Article.merge(@article1, @article2)
-      article3.body.should == @article1.body + @article2.body
+      article3.body.should == @article1.body + '\n' + @article2.body
     end
 
   end

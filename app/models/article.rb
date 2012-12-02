@@ -471,7 +471,7 @@ class Article < Content
     return nil unless article1.is_a?(Article) && article2.is_a?(Article)
     merged = Article.get_or_build_article.tap do |article|
       article.title = article1.title
-      article.body = article1.body + article2.body
+      article.body = article1.body + '\n' + article2.body
     end
   end
 
