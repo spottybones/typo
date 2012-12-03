@@ -5,19 +5,23 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "sel
 
 Given /^the following users exist:$/ do |table|
   table.hashes.map do |attributes|
-    @user = User.create!(attributes)
+    User.create!(attributes)
   end
 end
 
 Given /^the following articles exist:$/ do |table|
   table.hashes.map do |article|
-    @my_article = Article.create!(article)
+    Article.create!(
+      :title => article[:title],
+      :body => article[:body],
+      :user_id => User.find_by_login(article[:author]).id
+    )
   end
 end
 
 Given /^I edit the article titled "(.*?)"$/ do |title|
-  @article_id = Article.find_by_title(title).id
-  visit "/admin/content/edit/#{@article_id}/"
+  article_id = Article.find_by_title(title).id
+  visit "/admin/content/edit/#{article_id}/"
 end
 
 Then /^I should see a field named "(.*?)"$/ do |field_name|
@@ -52,7 +56,7 @@ end
 
 Given /^I merge the current article with the article titled "(.*?)"$/ do |title|
   article_id = Article.find_by_title(title).id
-  page.fill_in 'merge_with', :with => @article_id
+  page.fill_in 'merge_with', :with => article_id
   page.click_on 'Merge'
   # pending # express the regexp above with the code you wish you had
 end
