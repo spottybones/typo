@@ -124,7 +124,7 @@ class Admin::ContentController < Admin::BaseController
       if @article3
         @article3.save!
         flash[:notice] = _("Articles merged")
-        redirect_to @article3.permalink
+        redirect_to @article3.permalink_url
       else
         flash[:warning] = _("Articles NOT merged, unknown IDs?")
         redirect_to :action => 'index'

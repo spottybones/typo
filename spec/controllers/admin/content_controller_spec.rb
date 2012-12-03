@@ -718,7 +718,7 @@ describe Admin::ContentController do
         end
 
         it 'should redirect to the new article via its permalink' do
-          response.should redirect_to @article3.permalink
+          response.should redirect_to @article3.permalink_url
         end
 
         it 'should publish the new article' do
