@@ -470,6 +470,7 @@ class Article < Content
   def self.merge article1 = nil, article2 = nil
     return nil unless article1.is_a?(Article) && article2.is_a?(Article)
     merged = Article.get_or_build_article.tap do |article|
+      article.user_id = article1.user_id
       article.title = article1.title
       article.body = article1.body + '\n' + article2.body
     end
