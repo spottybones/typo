@@ -671,4 +671,77 @@ describe Admin::ContentController do
 
     end
   end
+
+  describe 'merge action' do
+
+    it 'should not allow non-admin to merge article' do
+      Factory(:blog)
+      #TODO delete this after remove fixture
+      Profile.delete_all
+      user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_publisher, :label => 'Publisher'))
+      user.editor = 'simple'
+      user.save
+      request.session = { :user => user.id }
+
+      post :merge
+      response.should redirect_to(:action => 'index')
+      assert_equal flash[:error], "Error, you are not allowed to perform this action"
+    end
+
+    describe 'for admin users' do
+
+      before do
+        Factory(:blog)
+        #TODO delete this after remove fixture
+        Profile.delete_all
+        @user = Factory(:user, :text_filter => Factory(:markdown), :profile => Factory(:profile_admin, :label => Profile::ADMIN))
+        @user.editor = 'simple'
+        @user.save
+        request.session = { :user => @user.id }
+
+        @article1 = Factory(:article, :permalink => 'article1')
+        @article2 = Factory(:article, :permalink => 'article2')
+        @article3 = Factory(:article, :permalink => 'article3')
+      end
+
+      describe 'with valid source articles' do
+
+        before do
+          Article.should_receive(:find).with(@article1.id).and_return(@article1)
+          Article.should_receive(:find).with(@article2.id).and_return(@article2)
+          Article.should_receive(:merge).with(@article1, @article2).and_return(@article3)
+          post :merge, 'id' => @article1.id, 'merge_with' => @article2.id
+        end
+
+        it 'should merge articles if valid source articles supplied' do
+          assert_equal flash[:notice], "Articles merged"
+        end
+
+        it 'should redirect to the new article via its permalink' do
+          response.should redirect_to @article3.permalink_url
+        end
+
+        it 'should publish the new article' do
+          assert @article3.published
+        end
+
+      end
+
+      describe 'without valid source articles' do
+
+        it 'should display an error if the target article does not exist' do
+          Article.should_receive(:find).with(@article1.id).and_return(@article1)
+          Article.should_receive(:find).with(99).and_return(nil)
+          Article.should_receive(:merge).with(@article1, nil).and_return(nil)
+
+          post :merge, 'id' => @article1.id, 'merge_with' => 99
+          assert_equal flash[:warning], "Articles NOT merged, unknown IDs?"
+        end
+
+      end
+
+    end
+
+  end
+
 end

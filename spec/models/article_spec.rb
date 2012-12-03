@@ -630,5 +630,35 @@ describe Article do
     end
 
   end
+
+  describe 'merge two articles' do
+
+    before do
+      @user = Factory(:user, :id => 1)
+      @article1 = Article.new(:title => 'Dog Article', :body => 'Dogs are dogs', :user_id => @user.id)
+      @article2 = Article.new(:title => 'Cat Article', :body => 'Cats are cats', :user_id => @user.id)
+      @article3 = Article.merge(@article1, @article2)
+    end
+
+    it 'should return nil if either source article is invalid' do
+      Article.merge(@article1, nil).should be_nil
+      Article.merge(nil, nil).should be_nil
+      Article.merge(nil, @article2).should be_nil
+    end
+
+    it 'should return a new article when valid source articles are supplied' do
+      Article.merge(@article1, @article2).should be_a(Article)
+    end
+
+    it 'should create and return a new article with the contents of both source articles' do
+      @article3.body.should == @article1.body + '\n' + @article2.body
+    end
+
+    it 'should copy ownership to the new article' do
+      @article3.user_id.should == @article1.user_id
+    end
+
+  end
+
 end
 
