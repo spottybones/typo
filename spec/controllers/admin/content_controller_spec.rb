@@ -704,29 +704,40 @@ describe Admin::ContentController do
         @article3 = Factory(:article, :permalink => 'article3')
       end
 
-      it 'should merge articles if valid source articles supplied' do
-        Article.should_receive(:find).with(@article1.id).and_return(@article1)
-        Article.should_receive(:find).with(@article2.id).and_return(@article2)
-        Article.should_receive(:merge).with(@article1, @article2).and_return(@article3)
-        post :merge, 'id' => @article1.id, 'merge_with' => @article2.id
-        assert_equal flash[:notice], "Articles merged"
+      describe 'with valid source articles' do
+
+        before do
+          Article.should_receive(:find).with(@article1.id).and_return(@article1)
+          Article.should_receive(:find).with(@article2.id).and_return(@article2)
+          Article.should_receive(:merge).with(@article1, @article2).and_return(@article3)
+          post :merge, 'id' => @article1.id, 'merge_with' => @article2.id
+        end
+
+        it 'should merge articles if valid source articles supplied' do
+          assert_equal flash[:notice], "Articles merged"
+        end
+
+        it 'should redirect to the new article via its permalink' do
+          response.should redirect_to @article3.permalink
+        end
+
+        it 'should publish the new article' do
+          assert @article3.published
+        end
+
       end
 
-      it 'should redirect to the new article via its permalink' do
-        Article.should_receive(:find).with(@article1.id).and_return(@article1)
-        Article.should_receive(:find).with(@article2.id).and_return(@article2)
-        Article.should_receive(:merge).with(@article1, @article2).and_return(@article3)
-        post :merge, 'id' => @article1.id, 'merge_with' => @article2.id
-        response.should redirect_to @article3.permalink
-      end
+      describe 'without valid source articles' do
 
-      it 'should display an error if the target article does not exist' do
-        Article.should_receive(:find).with(@article1.id).and_return(@article1)
-        Article.should_receive(:find).with(99).and_return(nil)
-        Article.should_receive(:merge).with(@article1, nil).and_return(nil)
+        it 'should display an error if the target article does not exist' do
+          Article.should_receive(:find).with(@article1.id).and_return(@article1)
+          Article.should_receive(:find).with(99).and_return(nil)
+          Article.should_receive(:merge).with(@article1, nil).and_return(nil)
 
-        post :merge, 'id' => @article1.id, 'merge_with' => 99
-        assert_equal flash[:warning], "Articles NOT merged, unknown IDs?"
+          post :merge, 'id' => @article1.id, 'merge_with' => 99
+          assert_equal flash[:warning], "Articles NOT merged, unknown IDs?"
+        end
+
       end
 
     end
