@@ -635,8 +635,8 @@ describe Article do
 
     before do
       @user = Factory(:user, :id => 1)
-      @article1 = Article.new(:title => 'Dog Article', :body => 'Dogs are dogs', :user_id => @user.id)
-      @article2 = Article.new(:title => 'Cat Article', :body => 'Cats are cats', :user_id => @user.id)
+      @article1 = Article.create!(:title => 'Dog Article', :body => 'Dogs are dogs', :user_id => @user.id)
+      @article2 = Article.create!(:title => 'Cat Article', :body => 'Cats are cats', :user_id => @user.id)
       @article3 = Article.merge(@article1, @article2)
     end
 
@@ -656,6 +656,15 @@ describe Article do
 
     it 'should copy ownership to the new article' do
       @article3.user_id.should == @article1.user_id
+    end
+
+    it 'should destroy the original articles' do
+      assert_raises(ActiveRecord::RecordNotFound) do
+        Article.find(@article1.id)
+      end
+      assert_raises(ActiveRecord::RecordNotFound) do
+        Article.find(@article2.id)
+      end
     end
 
   end
