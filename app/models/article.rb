@@ -474,6 +474,9 @@ class Article < Content
       article.title = article1.title
       article.body = article1.body + '\n' + article2.body
     end
+    article1.destroy
+    article2.destroy
+    return merged
   end
 
 end
