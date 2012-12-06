@@ -122,7 +122,6 @@ class Admin::ContentController < Admin::BaseController
       @article2 = Article.find(params[:merge_with])
       @article3 = Article.merge(@article1, @article2)
       if @article3
-        @article3.save!
         flash[:notice] = _("Articles merged")
         redirect_to @article3.permalink_url
       else

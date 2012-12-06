@@ -16,6 +16,11 @@ Feature: Merge Articles
       | Foobar             | Lorem Ipsum                    | user1 |
       | Gettysburg Address | Four Score and Seven Years Ago | user2 |
 
+    Given the following comments exist:
+      | article_title      | body                       | author   |
+      | Foobar             | Foobar Comment             | user one |
+      | Gettysburg Address | Gettysburg Address Comment | user two |
+
   Scenario: an Admin can merge articles
     Given I am logged into the admin panel
     And I edit the article titled "Foobar"
@@ -32,4 +37,6 @@ Feature: Merge Articles
     And I merge the current article with the article titled "Gettysburg Address"
     Then I should see the text "Lorem Ipsum"
     And I should see the text "Four Score and Seven Years Ago"
+    And I should see the text "Foobar Comment"
+    And I should see the text "Gettysburg Address Comment"
 

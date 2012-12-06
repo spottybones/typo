@@ -19,6 +19,16 @@ Given /^the following articles exist:$/ do |table|
   end
 end
 
+Given /^the following comments exist:$/ do |table|
+  table.hashes.map do |comment|
+    Comment.create!(
+      :article => Article.find_by_title(comment[:article_title]),
+      :body => comment[:body],
+      :author => comment[:author]
+    )
+  end
+end
+
 Given /^I edit the article titled "(.*?)"$/ do |title|
   article_id = Article.find_by_title(title).id
   visit "/admin/content/edit/#{article_id}/"
@@ -68,4 +78,3 @@ Then /^I should see the text "(.*?)"$/ do |text|
     assert page.has_content?(text)
   end
 end
-

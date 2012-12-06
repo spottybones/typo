@@ -469,14 +469,25 @@ class Article < Content
 
   def self.merge article1 = nil, article2 = nil
     return nil unless article1.is_a?(Article) && article2.is_a?(Article)
-    merged = Article.get_or_build_article.tap do |article|
+
+    merged_article = Article.get_or_build_article.tap do |article|
       article.user_id = article1.user_id
       article.title = article1.title
       article.body = article1.body + '\n' + article2.body
     end
-    article1.destroy
-    article2.destroy
-    return merged
+
+    return nil unless merged_article.save
+
+    [article1, article2].each do |source_article|
+      source_article.comments.each do |source_comment|
+        merged_article.comments << source_comment
+      end
+    end
+
+    article1.delete
+    article2.delete
+
+    return merged_article
   end
 
 end
