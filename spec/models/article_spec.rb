@@ -632,11 +632,12 @@ describe Article do
   end
 
   describe 'merge two articles' do
-
     before do
       @user = Factory(:user, :id => 1)
-      @article1 = Article.create!(:title => 'Dog Article', :body => 'Dogs are dogs', :user_id => @user.id)
-      @article2 = Article.create!(:title => 'Cat Article', :body => 'Cats are cats', :user_id => @user.id)
+      @article1 = Factory(:article, :title => 'Dog Article', :body => 'Dogs are dogs', :user_id => @user.id)
+      @article2 = Factory(:article, :title => 'Cat Article', :body => 'Cats are cats', :user_id => @user.id)
+      @comment1 = Factory(:comment, :article => @article1, :author => 'Luke Skywalker', :body => 'Comments by Luke')
+      @comment2 = Factory(:comment, :article => @article2, :author => 'Han Solo', :body => 'Comments by Han')
       @article3 = Article.merge(@article1, @article2)
     end
 
@@ -647,7 +648,7 @@ describe Article do
     end
 
     it 'should return a new article when valid source articles are supplied' do
-      Article.merge(@article1, @article2).should be_a(Article)
+      @article3.should be_a(Article)
     end
 
     it 'should create and return a new article with the contents of both source articles' do
@@ -658,6 +659,11 @@ describe Article do
       @article3.user_id.should == @article1.user_id
     end
 
+    it 'should move the comments from each source article to the new article' do
+      assert_includes @article3.comments, @comment1
+      assert_includes @article3.comments, @comment2
+    end
+
     it 'should destroy the original articles' do
       assert_raises(ActiveRecord::RecordNotFound) do
         Article.find(@article1.id)
@@ -666,7 +672,6 @@ describe Article do
         Article.find(@article2.id)
       end
     end
-
   end
 
 end
