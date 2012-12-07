@@ -63,4 +63,18 @@ describe Admin::CategoriesController do
     assert_raise(ActiveRecord::RecordNotFound) { Category.find(test_id) }
   end
   
+  describe 'test new without ID' do
+    it 'should display a form for editing' do
+      get :new
+      assert_template 'new'
+    end
+
+    it 'should create an object for editing if not called with ID' do
+      new_category = Factory.build(:category)
+      Category.should_receive(:get_or_build_category).with(nil).and_return(new_category)
+      get :new
+      assert_template 'new'
+    end
+  end
+
 end
