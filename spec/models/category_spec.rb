@@ -46,4 +46,12 @@ describe Category do
   end
 end
 
-
+describe Category do
+  describe '#get_or_build_category' do
+    it 'should build a new category if called without a category ID' do
+      Factory(:blog)
+      new_category = Category.get_or_build_category(nil)
+      new_category.should be_a(Category)
+    end
+  end
+end

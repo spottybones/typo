@@ -83,5 +83,10 @@ class Category < ActiveRecord::Base
 
   validates_presence_of :name
   validates_uniqueness_of :name, :on => :create
+
+  def self.get_or_build_category id = nil
+    return Category.find(id) if id
+    Category.new
+  end
 end
 

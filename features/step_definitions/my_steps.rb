@@ -78,3 +78,7 @@ Then /^I should see the text "(.*?)"$/ do |text|
     assert page.has_content?(text)
   end
 end
+
+Then /^I can open the Categories page$/ do
+  visit '/admin/categories/'
+end
