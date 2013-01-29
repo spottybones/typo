@@ -26,7 +26,7 @@ end
 source :rubygems
 
 gem 'thin'
-gem 'rails', '~> 3.0.19'
+gem 'rails', '~> 3.0.20'
 gem 'require_relative'
 gem 'htmlentities'
 gem 'json'
